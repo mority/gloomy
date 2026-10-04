@@ -1,6 +1,7 @@
 package io.github.mority.gloomy
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -38,6 +39,9 @@ private const val MIN_COLOR_SCALE = 0.05f
 
 /** How many screen widths a horizontal swipe needs to cover the whole color range. */
 private const val COLOR_RANGE_WIDTHS = 1.5f
+
+/** Brightness change per volume key press. */
+private const val VOLUME_KEY_STEP = 0.05f
 
 private const val KEY_COLOR = "color_position"
 private const val KEY_LEVEL = "level"
@@ -79,6 +83,17 @@ class MainActivity : ComponentActivity() {
                     .pointerInput(Unit) { detectSwipes() }
             )
         }
+    }
+
+    /** Volume up/down step the brightness like a swipe; holding a key repeats. */
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        val step = when (keyCode) {
+            KeyEvent.KEYCODE_VOLUME_UP -> VOLUME_KEY_STEP
+            KeyEvent.KEYCODE_VOLUME_DOWN -> -VOLUME_KEY_STEP
+            else -> return super.onKeyDown(keyCode, event)
+        }
+        level = (level + step).coerceIn(0f, 1f)
+        return true
     }
 
     override fun onStop() {
