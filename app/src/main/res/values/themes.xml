@@ -1,0 +1,6 @@
+<resources>
+    <!-- Black window background so there is no white flash before the first frame. -->
+    <style name="Theme.Gloomy" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+</resources>
