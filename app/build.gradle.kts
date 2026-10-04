@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "io.github.mority.gloomy"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "io.github.mority.gloomy"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
     }
@@ -30,12 +30,18 @@ android {
     buildFeatures {
         compose = true
     }
+
+    // Leave out the Google-encrypted dependency metadata block; F-Droid's scanner flags it.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation("androidx.core:core-ktx:1.19.1")
+    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation(platform("androidx.compose:compose-bom:2026.09.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")
 }
