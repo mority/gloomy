@@ -20,4 +20,6 @@ sleeping child without blinding yourself or anyone else, or getting a glass of w
 - Changes the screen brightness only while gloomy is open.
 - No permissions, no network access, no ads, no tracking.
 
+---
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/moritycode)
