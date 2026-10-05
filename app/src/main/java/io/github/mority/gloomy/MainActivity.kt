@@ -52,14 +52,14 @@ class MainActivity : ComponentActivity() {
     private var colorPosition by mutableFloatStateOf(0f)
 
     /** Brightness level in [0, 1]. */
-    private var level by mutableFloatStateOf(0.3f)
+    private var level by mutableFloatStateOf(0.15f)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val prefs = getPreferences(MODE_PRIVATE)
         colorPosition = prefs.getFloat(KEY_COLOR, 0f).coerceIn(0f, 1f)
-        level = prefs.getFloat(KEY_LEVEL, 0.3f).coerceIn(0f, 1f)
+        level = prefs.getFloat(KEY_LEVEL, 0.15f).coerceIn(0f, 1f)
 
         // From API 27 on, android:showWhenLocked in the manifest lets this show over the
         // lock screen. It has to be there rather than set here: System UI reads it from
