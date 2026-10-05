@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Color range from red through amber and yellow to white: solid red 20%,
-  then blends to amber over 40%, to yellow over 30% and to white over 10%.
+  Color range from red through amber and yellow to white: blends from red
+  to amber over 75%, to yellow over 18.75% and to white over 6.25%.
   The gradient spans only the 72dp safe zone (18..90) of the 108dp adaptive
   icon canvas, so the proportions survive any launcher mask.
 -->
@@ -20,9 +20,8 @@
                 android:endX="90"
                 android:endY="54">
                 <item android:offset="0.00" android:color="#FFFF0000" /> <!-- red -->
-                <item android:offset="0.20" android:color="#FFFF0000" /> <!-- red -->
-                <item android:offset="0.60" android:color="#FFFFBF00" /> <!-- amber -->
-                <item android:offset="0.90" android:color="#FFFFFF00" /> <!-- yellow -->
+                <item android:offset="0.7500" android:color="#FFFFBF00" /> <!-- amber -->
+                <item android:offset="0.9375" android:color="#FFFFFF00" /> <!-- yellow -->
                 <item android:offset="1.00" android:color="#FFFFFFFF" /> <!-- white -->
             </gradient>
         </aapt:attr>
