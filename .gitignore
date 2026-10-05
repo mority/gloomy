@@ -5,3 +5,6 @@ build/
 local.properties
 *.iml
 captures/
+keystore.properties
+*.jks
+*.keystore
