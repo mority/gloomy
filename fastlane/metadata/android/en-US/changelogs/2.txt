@@ -1,0 +1,3 @@
+* Quick settings tile: open gloomy from the lock screen without unlocking.
+* New colors: red, amber, yellow, and white.
+* Default brightness lowered to 0.15.
