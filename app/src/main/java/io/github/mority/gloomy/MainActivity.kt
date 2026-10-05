@@ -26,11 +26,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import kotlin.math.abs
 
-/** Hue of the violet end of the spectrum (HSV degrees; 0 is red). */
-private const val VIOLET_HUE = 275f
-
-/** Fraction of the color range spent fading from violet to white at the end. */
-private const val WHITE_FRACTION = 0.15f
+/** Color stops, evenly spaced over the color range: red -> amber -> yellow -> white. */
+private val COLOR_STOPS = listOf(
+    Color(0xFFFF0000), // red
+    Color(0xFFFFBF00), // amber
+    Color(0xFFFFFF00), // yellow
+    Color.White,
+)
 
 /** Lowest backlight value; 0 switches the backlight off entirely on some devices. */
 private const val MIN_BACKLIGHT = 0.01f
@@ -48,7 +50,7 @@ private const val KEY_COLOR = "color_position"
 private const val KEY_LEVEL = "level"
 
 class MainActivity : ComponentActivity() {
-    /** Position in the color range [0, 1]: red at 0, through the spectrum to violet, then white at 1. */
+    /** Position in the color range [0, 1]: red at 0, through amber and yellow, to white at 1. */
     private var colorPosition by mutableFloatStateOf(0f)
 
     /** Brightness level in [0, 1]. */
@@ -132,7 +134,7 @@ class MainActivity : ComponentActivity() {
             }
 
             if (horizontal) {
-                // Swiping left moves towards violet and white, right back towards red.
+                // Swiping left moves towards yellow and white, right back towards red.
                 val delta = -drag.x / (size.width * COLOR_RANGE_WIDTHS)
                 colorPosition = (colorPosition + delta).coerceIn(0f, 1f)
             } else {
@@ -143,16 +145,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/**
- * Maps a position in [0, 1] to a color: red -> orange -> yellow -> green -> cyan
- * -> blue -> violet along the hue circle, then a fade from violet to white.
- */
+/** Maps a position in [0, 1] to a color by interpolating between [COLOR_STOPS]. */
 private fun colorAt(position: Float): Color {
-    val spectrumEnd = 1f - WHITE_FRACTION
-    if (position <= spectrumEnd) {
-        return Color.hsv(VIOLET_HUE * position / spectrumEnd, 1f, 1f)
-    }
-    return lerp(Color.hsv(VIOLET_HUE, 1f, 1f), Color.White, (position - spectrumEnd) / WHITE_FRACTION)
+    val scaled = position * (COLOR_STOPS.size - 1)
+    val i = scaled.toInt().coerceAtMost(COLOR_STOPS.size - 2)
+    return lerp(COLOR_STOPS[i], COLOR_STOPS[i + 1], scaled - i)
 }
 
 /** Scales [color] so that level 0 still shows a faint glow and level 1 is the full color. */

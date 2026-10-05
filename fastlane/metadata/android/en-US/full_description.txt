@@ -5,8 +5,8 @@ sleeping child without blinding yourself or anyone else, or getting a glass of w
 <b>Controls</b>
 <ul>
 <li>Swipe up or down, or use the volume keys, to make the light brighter or dimmer.</li>
-<li>Swipe left or right to move continuously through the spectrum, from red
-through orange, yellow, green, cyan and blue to violet, and finally white.</li>
+<li>Swipe left or right to move continuously from red through amber and
+yellow to white.</li>
 </ul>
 
 <b>Features</b>

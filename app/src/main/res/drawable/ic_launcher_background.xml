@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Visible light spectrum from red to violet, with red over-represented on the
-  left. The gradient spans only the 72dp safe zone (18..90) of the 108dp
-  adaptive icon canvas, so the proportions survive any launcher mask.
+  Color range from red through amber and yellow to white: solid red 20%,
+  then blends to amber over 40%, to yellow over 30% and to white over 10%.
+  The gradient spans only the 72dp safe zone (18..90) of the 108dp adaptive
+  icon canvas, so the proportions survive any launcher mask.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -19,13 +20,10 @@
                 android:endX="90"
                 android:endY="54">
                 <item android:offset="0.00" android:color="#FFFF0000" /> <!-- red -->
-                <item android:offset="0.40" android:color="#FFFF0000" /> <!-- red -->
-                <item android:offset="0.55" android:color="#FFFF8000" /> <!-- orange -->
-                <item android:offset="0.64" android:color="#FFFFFF00" /> <!-- yellow -->
-                <item android:offset="0.73" android:color="#FF00FF00" /> <!-- green -->
-                <item android:offset="0.81" android:color="#FF00FFFF" /> <!-- cyan -->
-                <item android:offset="0.90" android:color="#FF0000FF" /> <!-- blue -->
-                <item android:offset="1.00" android:color="#FF8000FF" /> <!-- violet -->
+                <item android:offset="0.20" android:color="#FFFF0000" /> <!-- red -->
+                <item android:offset="0.60" android:color="#FFFFBF00" /> <!-- amber -->
+                <item android:offset="0.90" android:color="#FFFFFF00" /> <!-- yellow -->
+                <item android:offset="1.00" android:color="#FFFFFFFF" /> <!-- white -->
             </gradient>
         </aapt:attr>
     </path>
