@@ -16,6 +16,8 @@ sleeping child without blinding yourself or anyone else, or getting a glass of w
 - Goes dimmer than the phone's lowest brightness setting by also dimming the
   color itself.
 - Keeps the screen on and hides the status and navigation bars while open.
+- Quick settings tile that opens gloomy straight from the lock screen, without
+  unlocking the phone.
 - Remembers the last color and brightness.
 - Changes the screen brightness only while gloomy is open.
 - No permissions, no network access, no ads, no tracking.

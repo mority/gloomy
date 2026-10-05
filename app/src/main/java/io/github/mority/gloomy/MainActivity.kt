@@ -1,5 +1,6 @@
 package io.github.mority.gloomy
 
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.WindowManager
@@ -59,6 +60,14 @@ class MainActivity : ComponentActivity() {
         val prefs = getPreferences(MODE_PRIVATE)
         colorPosition = prefs.getFloat(KEY_COLOR, 0f).coerceIn(0f, 1f)
         level = prefs.getFloat(KEY_LEVEL, 0.3f).coerceIn(0f, 1f)
+
+        // From API 27 on, android:showWhenLocked in the manifest lets this show over the
+        // lock screen. It has to be there rather than set here: System UI reads it from
+        // the manifest to decide whether a tile tap needs unlocking first.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
+            @Suppress("DEPRECATION")
+            window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
+        }
 
         enableEdgeToEdge()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
