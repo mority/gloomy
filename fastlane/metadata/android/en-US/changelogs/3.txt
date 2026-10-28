@@ -1,0 +1,2 @@
+* No changes to the app itself.
+* Screenshots now show the current colors.
