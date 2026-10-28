@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +25,11 @@ import androidx.core.content.edit
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import kotlinx.coroutines.delay
 import kotlin.math.abs
+import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.TimeSource
 
 /** Color stops, evenly spaced over the color range: red -> amber -> yellow -> white. */
 private val COLOR_STOPS = listOf(
@@ -46,6 +51,23 @@ private const val COLOR_RANGE_WIDTHS = 1.5f
 /** Brightness change per volume key press. */
 private const val VOLUME_KEY_STEP = 0.05f
 
+/**
+ * When to nudge the backlight, after the activity starts or its window gains focus.
+ * Android takes over the brightness shortly after one of these; dense nudges there keep a
+ * stuck backlight short, later ones catch slow cases.
+ */
+private val NUDGE_TIMES = listOf(100, 200, 300, 400, 600, 1000, 1500).map { it.milliseconds }
+
+/** How long a nudge holds the lowered backlight, so that Android ramps at least one step. */
+private val NUDGE_DURATION = 33.milliseconds
+
+/**
+ * A nudge lowers the backlight to 95%, and to at most this. Outside high brightness mode
+ * Android caps the window brightness (at 0.599 on a Fairphone 5); a nudge above the cap
+ * would change nothing.
+ */
+private const val NUDGE_CEILING = 0.5f
+
 private const val KEY_COLOR = "color_position"
 private const val KEY_LEVEL = "level"
 
@@ -55,6 +77,12 @@ class MainActivity : ComponentActivity() {
 
     /** Brightness level in [0, 1]. */
     private var level by mutableFloatStateOf(0.15f)
+
+    /**
+     * Counts starts and focus gains, after which Android may take over the brightness
+     * from the system; each restarts the backlight nudges.
+     */
+    private var takeoverCount by mutableIntStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,9 +109,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             // Drive the real backlight from the level. This overrides the system
             // brightness only while this window is in the foreground.
-            LaunchedEffect(level) {
-                window.attributes = window.attributes.apply {
-                    screenBrightness = level.coerceAtLeast(MIN_BACKLIGHT)
+            LaunchedEffect(level) { setBacklight(level) }
+
+            // Android takes over from the system brightness around the time the activity
+            // starts or the window gains focus; nudge then, so that the backlight doesn't
+            // get stuck.
+            LaunchedEffect(takeoverCount) {
+                val start = TimeSource.Monotonic.markNow()
+                for (time in NUDGE_TIMES) {
+                    delay(time - start.elapsedNow())
+                    nudgeBacklight()
                 }
             }
 
@@ -93,6 +128,40 @@ class MainActivity : ComponentActivity() {
                     .background(dim(colorAt(colorPosition), level))
                     .pointerInput(Unit) { detectSwipes() }
             )
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        takeoverCount++
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) takeoverCount++
+    }
+
+    /** Sets the window's backlight override to [value], but not below [MIN_BACKLIGHT]. */
+    private fun setBacklight(value: Float) {
+        window.attributes = window.attributes.apply {
+            screenBrightness = value.coerceAtLeast(MIN_BACKLIGHT)
+        }
+    }
+
+    /**
+     * Lowers the backlight slightly for a moment, so that Android sends the display one more
+     * brightness value. When Android takes over from the system brightness, e.g. on opening,
+     * it jumps to [level] in a single step. If that step starts below the DC dimming threshold,
+     * Fairphone's display code replaces it with a dim "transition point". Android still
+     * believes the display is at [level] and sends nothing more until the capped brightness
+     * changes, so above the cap the backlight would stay stuck.
+     */
+    private suspend fun nudgeBacklight() {
+        setBacklight(min(level, NUDGE_CEILING) * 0.95f)
+        try {
+            delay(NUDGE_DURATION)
+        } finally {
+            setBacklight(level)
         }
     }
 
