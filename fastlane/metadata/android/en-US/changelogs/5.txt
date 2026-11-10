@@ -1,0 +1,1 @@
+* Swiping in from the screen edges (to leave the app or open notifications) no longer changes the brightness or color.
