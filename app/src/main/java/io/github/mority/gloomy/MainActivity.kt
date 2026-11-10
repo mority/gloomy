@@ -10,7 +10,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemGestures
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -126,8 +129,17 @@ class MainActivity : ComponentActivity() {
                 Modifier
                     .fillMaxSize()
                     .background(dim(colorAt(colorPosition), level))
-                    .pointerInput(Unit) { detectSwipes() }
-            )
+            ) {
+                // Swipes from the edges belong to the system (home, back, notifications).
+                // Android still hands them to the app, so take drags only from inside them;
+                // otherwise every swipe out of the app brightens or recolors a little.
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.systemGestures)
+                        .pointerInput(Unit) { detectSwipes() }
+                )
+            }
         }
     }
 
@@ -186,8 +198,8 @@ class MainActivity : ComponentActivity() {
 
     /**
      * Each drag locks to the axis it starts out on: vertical changes the
-     * brightness (a full-height swipe covers the whole range), horizontal
-     * moves along the color range.
+     * brightness (a swipe over the full height of the touch area covers the
+     * whole range), horizontal moves along the color range.
      */
     private suspend fun PointerInputScope.detectSwipes() {
         var horizontal = false
