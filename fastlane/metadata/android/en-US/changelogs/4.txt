@@ -1,0 +1,1 @@
+* Fixed the screen sometimes staying dimmer than the set brightness on phones with DC dimming (e.g. Fairphone 5).
