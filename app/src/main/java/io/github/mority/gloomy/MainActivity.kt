@@ -29,6 +29,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import kotlinx.coroutines.delay
+import java.lang.ref.WeakReference
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.time.Duration.Companion.milliseconds
@@ -86,6 +87,16 @@ class MainActivity : ComponentActivity() {
      * from the system; each restarts the backlight nudges.
      */
     private var takeoverCount by mutableIntStateOf(0)
+
+    companion object {
+        private var started: WeakReference<MainActivity>? = null
+
+        /**
+         * gloomy while it is on screen and not closing, for the quick settings tile to show as
+         * active and to close; the tile runs in the same process.
+         */
+        val open: MainActivity? get() = started?.get()?.takeUnless { it.isFinishing }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,6 +157,8 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         takeoverCount++
+        started = WeakReference(this)
+        GloomyTileService.update()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -190,6 +203,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
+        if (started?.get() === this) started = null
+        GloomyTileService.update()
         getPreferences(MODE_PRIVATE).edit {
             putFloat(KEY_COLOR, colorPosition)
             putFloat(KEY_LEVEL, level)
